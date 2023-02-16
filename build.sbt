@@ -1,9 +1,11 @@
 import Dependencies._
 
-ThisBuild / scalaVersion := "2.12.10"
-ThisBuild / version := "0.1.0-SNAPSHOT"
-ThisBuild / organization := "green.thisfieldwas"
-ThisBuild / organizationName := "example"
+scalaVersion := "2.12.10"
+crossScalaVersions := Seq("2.12.10", "2.13.10")
+
+version := "0.1.0-SNAPSHOT"
+organization := "green.thisfieldwas.random"
+organizationName := "random"
 
 addCompilerPlugin(
   ("org.typelevel" % "kind-projector" % "0.13.2").cross(CrossVersion.full)
