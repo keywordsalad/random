@@ -1,14 +1,41 @@
 import Dependencies._
 
-scalaVersion := "2.12.10"
-crossScalaVersions := Seq("2.12.10", "2.12.17", "2.13.10")
+val homepageUrl = url("https://bitsof.thisfieldwas.green/keywordsalad/random")
 
-version := "0.1.0-SNAPSHOT"
-organization := "green.thisfieldwas"
-organizationName := "This Field Was Green"
-organizationHomepage := Some(url("https://thisfieldwas.green"))
-description := "A useful library of immutable random number generators"
-licenses := Seq("APL2" -> url("https://www.apache.org/licenses/LICENSE-2.0.txt"))
+ThisBuild / scalaVersion := "2.12.10"
+ThisBuild / crossScalaVersions := Seq("2.12.10", "2.12.17", "2.13.10")
+
+ThisBuild / version := "0.1.0-SNAPSHOT"
+ThisBuild / organization := "green.thisfieldwas"
+ThisBuild / organizationName := "This Field Was Green"
+ThisBuild / organizationHomepage := Some(url("https://thisfieldwas.green"))
+ThisBuild / description := "A useful library of immutable random number generators"
+ThisBuild / homepage := Some(homepageUrl)
+
+ThisBuild / licenses := Seq(
+  "APL2" -> url("https://www.apache.org/licenses/LICENSE-2.0.txt")
+)
+
+ThisBuild / scmInfo := Some(
+  ScmInfo(
+    browseUrl = homepageUrl,
+    connection = "scm:git@bitsof.thisfieldwas.green:keywordsalad/random.git"
+  )
+)
+
+ThisBuild / developers := List(
+  Developer(
+    "keywordsalad",
+    "Logan McGrath",
+    "logan.mcgrath@thisfieldwas.green",
+    url("https://thisfieldwas.green")
+  )
+)
+
+ThisBuild / publishMavenStyle := true
+ThisBuild / publishTo := sonatypePublishToBundle.value
+ThisBuild / sonatypeCredentialHost := "oss.sonatype.org"
+ThisBuild / sonatypeRepository := "https://oss.sonatype.org/service/local"
 
 lazy val root = (project in file("."))
   .settings(
@@ -16,14 +43,3 @@ lazy val root = (project in file("."))
     scalacOptions ++= Seq("-Xlint", "-Xfatal-warnings"),
     libraryDependencies ++= testDependencies
   )
-
-import xerial.sbt.Sonatype.ProjectHosting
-sonatypeProjectHosting := Some(
-  ProjectHosting(
-    domain = "thisfieldwas.green",
-    user = "keywordsalad",
-    fullName = Some("Logan McGrath"),
-    email = "logan.mcgrath@thisfieldwas.green",
-    repository = "https://bitsof.thisfieldwas.green/keywordsalad/random"
-  )
-)
