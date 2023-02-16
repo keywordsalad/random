@@ -34,8 +34,8 @@ case class Xoshiro256ss(x: Long, y: Long, z: Long, w: Long) extends RNG {
   }
 
   /**
-   * This is the jump function for the generator. It is equivalent to 2^128 calls to next(); it can be used to generate
-   * 2^128 non-overlapping subsequences for parallel computations. The generated [[Stream]] is infinite and uses the
+   * This is the jump function for the generator. It is equivalent to 2**128 calls to next(); it can be used to generate
+   * 2**128 non-overlapping subsequences for parallel computations. The generated [[Stream]] is infinite and uses the
    * last generated jump to seed the next series of jumps.
    *
    * @return
@@ -53,8 +53,8 @@ case class Xoshiro256ss(x: Long, y: Long, z: Long, w: Long) extends RNG {
     )
 
   /**
-   * This is the long-jump function for the generator. It is equivalent to 2^192 calls to next(); it can be used to
-   * generate 2^64 starting points, from each of which jump() will generate 2^64 non-overlapping subsequences for
+   * This is the long-jump function for the generator. It is equivalent to 2**192 calls to next(); it can be used to
+   * generate 2**64 starting points, from each of which jump() will generate 2**64 non-overlapping subsequences for
    * parallel distributed computations. The generated [[Stream]] is infinite and uses the last generated jump to seed
    * the next series of jumps.
    *
