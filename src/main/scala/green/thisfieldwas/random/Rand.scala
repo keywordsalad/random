@@ -1,43 +1,86 @@
 package green.thisfieldwas.random
 
-case class Rand[A](run: RNG => (RNG, A)) {
-
-  def runA(rng: RNG): A = run(rng)._2
-
-  def map[B](f: A => B): Rand[B] =
-    Rand { rng =>
-      val (nextRNG, x) = run(rng)
-      (nextRNG, f(x))
-    }
-
-  def flatMap[B](f: A => Rand[B]): Rand[B] =
-    Rand { rng =>
-      val (nextRNG, x) = run(rng)
-      f(x).run(nextRNG)
-    }
-}
+import java.awt.event.KeyEvent
+import java.lang.Double.longBitsToDouble
 
 object Rand {
 
-  def next(): Rand[Long] = Rand(_.next())
+  implicit class RandOps[A](val rand: Rand[A]) extends AnyVal {
 
-  def next(numBits: Int): Rand[Long] = Rand(_.next(numBits))
+    def map[B](f: A => B): Rand[B] = rng => {
+      val (nextRng, x) = rand(rng)
+      (nextRng, f(x))
+    }
 
-  def nextInt(bound: Int = Int.MaxValue): Rand[Int] = Rand(_.nextInt(bound))
+    def ap[B](ff: Rand[A => B]): Rand[B] = rng => {
+      val (nextRng1, x) = rand(rng)
+      val (nextRng2, f) = ff(nextRng1)
+      (nextRng2, f(x))
+    }
 
-  def nextLong(bound: Long = Long.MaxValue): Rand[Long] = Rand(_.nextLong(bound))
+    def flatMap[B](f: A => Rand[B]): Rand[B] = rng => {
+      val (nextRng, x) = rand(rng)
+      f(x)(nextRng)
+    }
+  }
 
-  def nextDouble(bound: Double = 1.0): Rand[Double] = Rand(_.nextDouble(bound))
+  def pure[A](value: A): Rand[A] = (_, value)
 
-  def nextBoolean(): Rand[Boolean] = Rand(_.nextBoolean())
+  def flatten[A](rand: Rand[Rand[A]]): Rand[A] =
+    rand.flatMap(identity)
 
-  def nextChar(): Rand[Char] = Rand(_.nextChar())
+  def next(numBits: Int): Rand[Long] = rng => {
+    val (nextRng, result) = rng.next()
+    (nextRng, result & ((1L << numBits) - 1))
+  }
 
-  def nextAsciiChar(): Rand[Char] = Rand(_.nextAsciiChar())
+  def nextInt(bound: Int = Int.MaxValue): Rand[Int] =
+    next(31).map(i => (i.toInt & Int.MaxValue) % bound)
 
-  def nextIdChar(): Rand[Char] = Rand(_.nextIdChar())
+  def nextLong(bound: Long = Long.MaxValue): Rand[Long] =
+    next(63).map(i => (i & Long.MaxValue) % bound)
 
-  def nextAsciiString(length: Int): Rand[String] = Rand(_.nextAsciiString(length))
+  def nextDouble(bound: Double = 1.0): Rand[Double] =
+    nextLong().map(n => (longBitsToDouble(0x3ffL << 52 | n >>> 12) - 1.0) / 1.0 * bound)
 
-  def nextIdString(length: Int): Rand[String] = Rand(_.nextIdString(length))
+  def nextBoolean(): Rand[Boolean] =
+    nextLong().map(n => (n & 1L) != 0)
+
+  def nextChar(): Rand[Char] =
+    next(16).flatMap(c => if (c.isValidChar) pure(c.toChar) else nextChar())
+
+  def nextAsciiChar(): Rand[Char] =
+    next(7).flatMap(c => if (c.isValidChar) pure(c.toChar) else nextAsciiChar())
+
+  def nextIdChar(): Rand[Char] =
+    nextChar().flatMap(c => if (c.isLetterOrDigit || c == '_') pure(c) else nextIdChar())
+
+  def nextPrintableChar(): Rand[Char] =
+    nextChar().flatMap { c =>
+      if (
+        !Character.isISOControl(c) && c != KeyEvent.CHAR_UNDEFINED && Option(Character.UnicodeBlock.of(c))
+          .fold(false)(_ ne Character.UnicodeBlock.SPECIALS)
+      ) {
+        pure(c)
+      } else {
+        nextPrintableChar()
+      }
+    }
+
+  def nextAsciiString(length: Int): Rand[String] =
+    repeat(length)(nextAsciiChar()).map(_.mkString(""))
+
+  def nextIdString(length: Int): Rand[String] =
+    repeat(length)(nextIdChar()).map(_.mkString(""))
+
+  def nextPrintableString(length: Int): Rand[String] =
+    repeat(length)(nextPrintableChar()).map(_.mkString(""))
+
+  def sequence[A](listOfRand: List[Rand[A]]): Rand[List[A]] =
+    listOfRand
+      .foldLeft(pure(List.empty[A]))((randOfList, rand) => rand.flatMap(x => randOfList.map(x +: _)))
+      .map(_.reverse)
+
+  def repeat[A](count: Int)(rand: Rand[A]): Rand[List[A]] =
+    sequence(List.fill(count)(rand))
 }

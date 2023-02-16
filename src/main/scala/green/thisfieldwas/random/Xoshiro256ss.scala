@@ -48,8 +48,8 @@ case class Xoshiro256ss(x: Long, y: Long, z: Long, w: Long) extends RNG {
         0x180ec6d33cfd0abaL,
         0xd5a61266f0c9392cL,
         0xa9582618e03fc9aaL,
-        0x39abdc4529b1661cL,
-      ),
+        0x39abdc4529b1661cL
+      )
     )
 
   /**
@@ -68,8 +68,8 @@ case class Xoshiro256ss(x: Long, y: Long, z: Long, w: Long) extends RNG {
         0x76e15d3efefdcbbfL,
         0xc5004e441c522fb3L,
         0x77710069854ee241L,
-        0x39109bb02acbe635L,
-      ),
+        0x39109bb02acbe635L
+      )
     )
 }
 
@@ -78,10 +78,10 @@ object Xoshiro256ss {
   def apply(seed: Long): Xoshiro256ss = {
     import Rand._
 
-    val (first, second) = (for {
+    val (_, (first, second)) = (for {
       first <- nextLong()
       second <- nextLong()
-    } yield (first, second)).runA(SplitMix64(seed))
+    } yield (first, second))(SplitMix64(seed))
 
     val x = first & 0xfffffffL
     val y = first >> 32
@@ -125,7 +125,7 @@ object Xoshiro256ss {
           rng.next()._1,
           jump,
           shift = shift + 1,
-          state = (nextX, nextY, nextZ, nextW),
+          state = (nextX, nextY, nextZ, nextW)
         )
       } else {
         // no state produced, advanced the shift
