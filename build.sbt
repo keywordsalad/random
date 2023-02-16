@@ -34,8 +34,8 @@ ThisBuild / developers := List(
 
 ThisBuild / publishMavenStyle := true
 ThisBuild / publishTo := sonatypePublishToBundle.value
-ThisBuild / sonatypeCredentialHost := "oss.sonatype.org"
-ThisBuild / sonatypeRepository := "https://oss.sonatype.org/service/local"
+sonatypeCredentialHost := "s01.oss.sonatype.org"
+sonatypeRepository := "https://s01.oss.sonatype.org/service/local"
 
 lazy val root = (project in file("."))
   .settings(
