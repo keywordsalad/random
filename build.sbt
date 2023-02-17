@@ -5,7 +5,7 @@ val homepageUrl = url("https://bitsof.thisfieldwas.green/keywordsalad/random")
 ThisBuild / scalaVersion := "2.12.10"
 ThisBuild / crossScalaVersions := Seq("2.12.10", "2.13.10")
 
-ThisBuild / version := "0.1.0-SNAPSHOT"
+ThisBuild / version := "0.1.0"
 ThisBuild / organization := "green.thisfieldwas"
 ThisBuild / organizationName := "This Field Was Green"
 ThisBuild / organizationHomepage := Some(url("https://thisfieldwas.green"))
@@ -43,3 +43,21 @@ lazy val root = (project in file("."))
     scalacOptions ++= Seq("-Xlint", "-Xfatal-warnings"),
     libraryDependencies ++= testDependencies
   )
+
+import ReleaseTransformations._
+
+releaseCrossBuild := true
+releaseProcess := Seq(
+  checkSnapshotDependencies,
+  inquireVersions,
+  runClean,
+  runTest,
+  setReleaseVersion,
+  commitReleaseVersion,
+  tagRelease,
+  releaseStepCommandAndRemaining("+publishSigned"),
+  releaseStepCommand("sonatypeBundleRelease"),
+  setNextVersion,
+  commitNextVersion,
+  pushChanges
+)
