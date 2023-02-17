@@ -3,7 +3,7 @@ import Dependencies._
 val homepageUrl = url("https://bitsof.thisfieldwas.green/keywordsalad/random")
 
 ThisBuild / scalaVersion := "2.12.10"
-ThisBuild / crossScalaVersions := Seq("2.12.10", "2.12.17", "2.13.10")
+ThisBuild / crossScalaVersions := Seq("2.12.10", "2.13.10")
 
 ThisBuild / version := "0.1.0-SNAPSHOT"
 ThisBuild / organization := "green.thisfieldwas"
