@@ -1,5 +1,7 @@
 package green.thisfieldwas.random
 
+import Definitions._
+
 /**
  * Xoshiro256** pseudo-random number generator for 64-bit values. Mnemonic for the PRNG algorithm name is
  * "xor/shift/rotate with 256-bits state". [[https://en.wikipedia.org/wiki/Xorshift#xoshiro256** See here]] for
@@ -35,13 +37,13 @@ case class Xoshiro256ss(x: Long, y: Long, z: Long, w: Long) extends RNG {
 
   /**
    * This is the jump function for the generator. It is equivalent to 2**128 calls to next(); it can be used to generate
-   * 2**128 non-overlapping subsequences for parallel computations. The generated Stream is infinite and uses the
+   * 2**128 non-overlapping subsequences for parallel computations. The generated LazyList is infinite and uses the
    * last generated jump to seed the next series of jumps.
    *
    * @return
-   *   An infinite Stream of jumped generators.
+   *   An infinite LazyList of jumped generators.
    */
-  def jump(): Stream[Xoshiro256ss] =
+  def jump(): LazyList[Xoshiro256ss] =
     jumpWith(
       this,
       Array(
@@ -55,13 +57,13 @@ case class Xoshiro256ss(x: Long, y: Long, z: Long, w: Long) extends RNG {
   /**
    * This is the long-jump function for the generator. It is equivalent to 2**192 calls to next(); it can be used to
    * generate 2**64 starting points, from each of which jump() will generate 2**64 non-overlapping subsequences for
-   * parallel distributed computations. The generated Stream is infinite and uses the last generated jump to seed
+   * parallel distributed computations. The generated LazyList is infinite and uses the last generated jump to seed
    * the next series of jumps.
    *
    * @return
-   *   An infinite Stream of jumped generators.
+   *   An infinite LazyList of jumped generators.
    */
-  def longJump(): Stream[Xoshiro256ss] =
+  def longJump(): LazyList[Xoshiro256ss] =
     jumpWith(
       this,
       Array(
@@ -97,17 +99,17 @@ object Xoshiro256ss {
   private def rol64(x: Long, k: Int): Long = (x << k) | (x >>> (64 - k))
 
   /**
-   * Generates an infinite Stream of jumped [[Xoshiro256ss]] instances.
+   * Generates an infinite LazyList of jumped [[Xoshiro256ss]] instances.
    *
    * @param startRNG
    *   The starting generator.
    * @param jumps
    *   The array of jump values to use.
    * @return
-   *   An infinite Stream of non-overlapping instances.
+   *   An infinite LazyList of non-overlapping instances.
    */
-  private def jumpWith(startRNG: Xoshiro256ss, jumps: Array[Long]): Stream[Xoshiro256ss] = {
-    def tail(rng: Xoshiro256ss, jump: Int, shift: Int, state: (Long, Long, Long, Long)): Stream[Xoshiro256ss] = {
+  private def jumpWith(startRNG: Xoshiro256ss, jumps: Array[Long]): LazyList[Xoshiro256ss] = {
+    def tail(rng: Xoshiro256ss, jump: Int, shift: Int, state: (Long, Long, Long, Long)): LazyList[Xoshiro256ss] = {
       val (x, y, z, w) = state
       if (jump == jumps.length) {
         // jumps and shifts exhausted, restart tail() with the latest generator state
