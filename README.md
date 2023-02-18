@@ -6,6 +6,8 @@ This is a utility library containing a small collection of stateless random numb
 
 * splitmix64
 * xoshiro256**
+* linear congruential generators
+  * rand48
 
 ## Using RNG's
 
