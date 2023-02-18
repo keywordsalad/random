@@ -1,6 +1,6 @@
 import Dependencies._
 
-val homepageUrl = url("https://bitsof.thisfieldwas.green/keywordsalad/random")
+val homepageUrl = url("https://github.com/keywordsalad/random")
 
 ThisBuild / scalaVersion := "2.12.10"
 ThisBuild / crossScalaVersions := Seq("2.12.10", "2.13.10")
@@ -19,7 +19,7 @@ ThisBuild / licenses := Seq(
 ThisBuild / scmInfo := Some(
   ScmInfo(
     browseUrl = homepageUrl,
-    connection = "scm:git@bitsof.thisfieldwas.green:keywordsalad/random.git"
+    connection = "scm:git@github.com:keywordsalad/random.git"
   )
 )
 
