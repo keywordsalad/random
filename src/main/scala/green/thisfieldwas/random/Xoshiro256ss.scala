@@ -7,6 +7,10 @@ import Definitions._
  * "xor/shift/rotate with 256-bits state". [[https://en.wikipedia.org/wiki/Xorshift#xoshiro256** See here]] for
  * definition.
  *
+ * This generator includes functions to significantly advance the current state (i.e. "jump") such that a LazyList of
+ * non-overlapping generators may be created to support sharding across multiple work streams without any individual
+ * work stream impacting the results produced by another.
+ *
  * @param x
  *   State value #0.
  * @param y
@@ -20,7 +24,7 @@ case class Xoshiro256ss(x: Long, y: Long, z: Long, w: Long) extends RNG {
 
   import Xoshiro256ss._
 
-  override def next(): (Xoshiro256ss, Long) = {
+  override def next64(): (Xoshiro256ss, Long) = {
     val result = rol64(y * 5, 7) * 9
     val t = y << 17
 
@@ -124,14 +128,14 @@ object Xoshiro256ss {
         val nextZ = z ^ rng.z
         val nextW = w ^ rng.w
         Xoshiro256ss(x = nextX, y = nextY, z = nextZ, w = nextW) #:: tail(
-          rng.next()._1,
+          rng.next64()._1,
           jump,
           shift = shift + 1,
           state = (nextX, nextY, nextZ, nextW)
         )
       } else {
         // no state produced, advanced the shift
-        tail(rng.next()._1, jump, shift + 1, (x, y, z, w))
+        tail(rng.next64()._1, jump, shift + 1, (x, y, z, w))
       }
     }
     tail(startRNG, jump = 0, shift = 0, state = (0, 0, 0, 0))

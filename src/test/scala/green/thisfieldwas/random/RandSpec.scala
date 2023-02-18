@@ -56,6 +56,6 @@ class RandSpec extends AnyWordSpec with Matchers with ScalaCheckPropertyChecks {
 
   case class ConstRng(x: Long) extends RNG {
 
-    override def next(): (RNG, Long) = (this, x)
+    override def next64(): (RNG, Long) = (this, x)
   }
 }

@@ -9,7 +9,7 @@ package green.thisfieldwas.random
  */
 private case class SplitMix64(state: Long) extends RNG {
 
-  override def next(): (RNG, Long) = {
+  override def next64(): (RNG, Long) = {
     var z = state
     z = (z ^ (z >> 30)) * 0xbf58476d1ce4e5b9L
     z = (z ^ (z >> 27)) * 0x94d049bb133111ebL

@@ -52,7 +52,12 @@ object Rand {
    * @return A Rand producing `numBits` from the next value.
    */
   def next(numBits: Int): Rand[Long] = rng => {
-    val (nextRng, result) = rng.next()
+    val (nextRng, result) =
+      if (numBits > 32) {
+        rng.next64()
+      } else {
+        rng.next32()
+      }
     (nextRng, result & ((1L << numBits) - 1))
   }
 
